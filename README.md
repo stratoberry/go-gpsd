@@ -30,12 +30,12 @@ Filter functions have a type of `gps.Filter` and should receive one argument of 
 	fmt.Println("Location updated", report.Lat, report.Lon)
 }</code></pre>
 
-Due to nature of GPSD reports your filter will manually have to cast the type of the passed in argument to a proper `*gpsd.Report` struct pointer.
+Due to the nature of GPSD reports your filter will manually have to cast the type of the argument it received to a proper `*gpsd.Report` struct pointer.
 
 After installing all needed filters, call the `Watch` method to start observing reports. Please note that at this time installed filters can't be removed.
 
 <pre><code>done := gps.Watch()
-<-done</code></pre>
+&lt;-done</code></pre>
 
 `Watch()` will span a new goroutine in which all data processing will happen, `done` channel won't send anything.
 
