@@ -168,6 +168,7 @@ func Dial(address string) (session *Session, err error) {
 
   session.reader = bufio.NewReader(session.socket)
   line, _ := session.reader.ReadString('\n')
+  _ = line
   session.filters = make(map[string][]Filter)
 
   return
