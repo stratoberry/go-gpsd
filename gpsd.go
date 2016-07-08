@@ -165,9 +165,12 @@ type Satellite struct {
 func Dial(address string) (session *Session, err error) {
   session = new(Session)
   session.socket, err = net.Dial("tcp4", address)
+  if err != nil {
+		return nil, err
+	}
 
   session.reader = bufio.NewReader(session.socket)
-  line, _ := session.reader.ReadString('\n')
+  session.reader.ReadString('\n')
   session.filters = make(map[string][]Filter)
 
   return
@@ -236,7 +239,11 @@ func watch(done chan bool, s *Session) {
         fmt.Println("JSON parsing error:", err)
       }
     } else {
-      fmt.Println("Stream reader error:", err)
+	fmt.Println("Stream reader error:", err)
+	fmt.Println("Stream reader error: (check gpsd running or not )", err)
+	done  <- true
+	return ;
+      
     }
   }
 }
