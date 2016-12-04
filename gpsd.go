@@ -43,7 +43,7 @@ type TPVReport struct {
   Alt    float64   `json:"alt"`
   Epx    float64   `json:"epx"`
   Epy    float64   `json:"epy"`
-  Epv    float64   `json:"ev"`
+  Epv    float64   `json:"epv"`
   Track  float64   `json:"track"`
   Speed  float64   `json:"speed"`
   Climb  float64   `json:"climb"`
@@ -168,6 +168,7 @@ func Dial(address string) (session *Session, err error) {
 
   session.reader = bufio.NewReader(session.socket)
   line, _ := session.reader.ReadString('\n')
+  _ = line
   session.filters = make(map[string][]Filter)
 
   return
