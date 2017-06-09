@@ -239,6 +239,7 @@ func (s *Session) deliverReport(class string, report interface{}) {
 func watch(done chan bool, s *Session) {
 	// We're not using a JSON decoder because we first need to inspect
 	// the JSON string to determine it's "class"
+	defer close(done)
 	for {
 		if line, err := s.reader.ReadString('\n'); err == nil {
 			var reportPeek gpsdReport
@@ -258,6 +259,7 @@ func watch(done chan bool, s *Session) {
 			}
 		} else {
 			log.Println("Stream reader error (is gpsd running?):", err)
+			break
 		}
 	}
 }
