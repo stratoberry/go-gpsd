@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net"
 	"time"
 )
@@ -238,6 +239,7 @@ func (s *Session) deliverReport(class string, report interface{}) {
 func watch(done chan bool, s *Session) {
 	// We're not using a JSON decoder because we first need to inspect
 	// the JSON string to determine it's "class"
+	defer close(done)
 	for {
 		if line, err := s.reader.ReadString('\n'); err == nil {
 			var reportPeek gpsdReport
@@ -250,13 +252,14 @@ func watch(done chan bool, s *Session) {
 				if report, err2 := unmarshalReport(reportPeek.Class, lineBytes); err2 == nil {
 					s.deliverReport(reportPeek.Class, report)
 				} else {
-					fmt.Println("JSON parsing error 2:", err)
+					log.Println("JSON parsing error 2:", err)
 				}
 			} else {
-				fmt.Println("JSON parsing error:", err)
+				log.Println("JSON parsing error:", err)
 			}
 		} else {
-			fmt.Println("Stream reader error (is gpsd running?):", err)
+			log.Println("Stream reader error (is gpsd running?):", err)
+			break
 		}
 	}
 }
