@@ -24,6 +24,7 @@ func main() {
 
 	gps.AddFilter("SKY", skyfilter)
 
+	//Handle errors
 	errChan := gps.Watch()
 	for {
 		if err := <-errChan; err.Error != nil {
