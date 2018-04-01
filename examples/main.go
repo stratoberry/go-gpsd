@@ -1,6 +1,7 @@
 package main
 
 import "fmt"
+import "go-gpsd"
 
 func main() {
 	var gps *gpsd.Session
@@ -23,6 +24,13 @@ func main() {
 
 	gps.AddFilter("SKY", skyfilter)
 
-	done := gps.Watch()
-	<-done
+	//Handle errors
+	errChan := gps.Watch()
+	for {
+		if err := <-errChan; err.Error != nil {
+			fmt.Println(err.Message)
+		} else {
+			fmt.Println("OK")
+		}
+	}
 }
