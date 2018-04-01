@@ -179,6 +179,12 @@ type Satellite struct {
 	Used bool    `json:"used"`
 }
 
+// GPSDError is an error, that return when there was a GPSD daemon error
+type GPSDError struct {
+	Message string
+	Error   error
+}
+
 // Dial opens a new connection to GPSD.
 func Dial(address string) (session *Session, err error) {
 	session = new(Session)
@@ -200,11 +206,11 @@ func Dial(address string) (session *Session, err error) {
 //    gps := gpsd.Dial(gpsd.DEFAULT_ADDRESS)
 //    done := gpsd.Watch()
 //    <- done
-func (s *Session) Watch() (done chan bool) {
+func (s *Session) Watch() (err chan GPSDError) {
 	fmt.Fprintf(s.socket, "?WATCH={\"enable\":true,\"json\":true}")
-	done = make(chan bool)
+	err = make(chan GPSDError)
 
-	go watch(done, s)
+	go watch(err, s)
 
 	return
 }
@@ -235,10 +241,11 @@ func (s *Session) deliverReport(class string, report interface{}) {
 	}
 }
 
-func watch(done chan bool, s *Session) {
+func watch(errChan chan GPSDError, s *Session) {
 	// We're not using a JSON decoder because we first need to inspect
 	// the JSON string to determine it's "class"
 	for {
+		recError := GPSDError{Message: "OK", Error: nil}
 		if line, err := s.reader.ReadString('\n'); err == nil {
 			var reportPeek gpsdReport
 			lineBytes := []byte(line)
@@ -250,13 +257,22 @@ func watch(done chan bool, s *Session) {
 				if report, err2 := unmarshalReport(reportPeek.Class, lineBytes); err2 == nil {
 					s.deliverReport(reportPeek.Class, report)
 				} else {
-					fmt.Println("JSON parsing error 2:", err)
+					recError.Message = "JSON(2) parsing error"
+					recError.Error = err2
 				}
 			} else {
-				fmt.Println("JSON parsing error:", err)
+				recError.Message = "JSON parsing error"
+				recError.Error = err
 			}
 		} else {
-			fmt.Println("Stream reader error (is gpsd running?):", err)
+			recError.Message = "Stream reader error (is gpsd running?)"
+			recError.Error = err
+		}
+		//Non-blocking send to err channel
+		select {
+		case errChan <- recError:
+		default:
+			continue
 		}
 	}
 }
