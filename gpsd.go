@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net"
 	"time"
 )
@@ -180,9 +181,18 @@ type Satellite struct {
 }
 
 // Dial opens a new connection to GPSD.
-func Dial(address string) (session *Session, err error) {
+func Dial(address string) (*Session, error) {
+	return dialCommon(net.Dial("tcp4", address))
+}
+
+// DialTimeout opens a new connection to GPSD with a timeout.
+func DialTimeout(address string, to time.Duration) (*Session, error) {
+	return dialCommon(net.DialTimeout("tcp4", address, to))
+}
+
+func dialCommon(c net.Conn, err error) (session *Session, e error) {
 	session = new(Session)
-	session.socket, err = net.Dial("tcp4", address)
+	session.socket = c
 	if err != nil {
 		return nil, err
 	}
@@ -257,8 +267,12 @@ func watch(done chan bool, s *Session) {
 			}
 		} else {
 			fmt.Println("Stream reader error (is gpsd running?):", err)
+			if err == io.EOF {
+				break
+			}
 		}
 	}
+	done <- true
 }
 
 func unmarshalReport(class string, bytes []byte) (interface{}, error) {
