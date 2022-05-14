@@ -57,8 +57,6 @@ For complete library docs, visit [GoDoc.org](http://godoc.org/github.com/stratob
 
 GPSD's documentation on their JSON protocol can be found at [http://catb.org/gpsd/gpsd_json.html](http://catb.org/gpsd/gpsd_json.html)
 
-To learn more about the Stratoberry Pi project, visit our website at [stratoberry.foi.hr](http://stratoberry.foi.hr).
+## References
 
-
-## License
-
+This library was originally developed as a part of a student project at [FOI/University of Zagreb](https://www.foi.unizg.hr/en).
