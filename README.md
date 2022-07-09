@@ -2,6 +2,8 @@
 
 *GPSD client for Go.*
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/stratoberry/go-gpsd.svg)](https://pkg.go.dev/github.com/stratoberry/go-gpsd)
+
 ## Installation
 
 <pre><code># go get github.com/stratoberry/go-gpsd</code></pre>
@@ -41,21 +43,21 @@ After installing all needed filters, call the `Watch` method to start observing 
 
 ### Currently supported GPSD report types
 
-* `VERSION` (`gpsd.VERSIONReport`)
-* `TPV` (`gpsd.TPVReport`)
-* `SKY` (`gpsd.SKYReport`)
-* `ATT` (`gpsd.ATTReport`)
-* `GST` (`gpsd.GSTReport`)
-* `PPS` (`gpsd.PPSReport`)
-* `Devices` (`gpsd.DEVICESReport`)
-* `DEVICE` (`gpsd.DEVICEReport`)
-* `ERROR` (`gpsd.ERRORReport`)
+* [`VERSION`](https://gpsd.gitlab.io/gpsd/gpsd_json.html#_version) (`gpsd.VERSIONReport`)
+* [`TPV`](https://gpsd.gitlab.io/gpsd/gpsd_json.html#_tpv) (`gpsd.TPVReport`)
+* [`SKY`](https://gpsd.gitlab.io/gpsd/gpsd_json.html#_sky) (`gpsd.SKYReport`)
+* [`ATT`](https://gpsd.gitlab.io/gpsd/gpsd_json.html#_att) (`gpsd.ATTReport`)
+* [`GST`](https://gpsd.gitlab.io/gpsd/gpsd_json.html#_gst) (`gpsd.GSTReport`)
+* [`PPS`](https://gpsd.gitlab.io/gpsd/gpsd_json.html#_pps) (`gpsd.PPSReport`)
+* [`DEVICES`](https://gpsd.gitlab.io/gpsd/gpsd_json.html#_devices) (`gpsd.DEVICESReport`)
+* [`DEVICE`](https://gpsd.gitlab.io/gpsd/gpsd_json.html#_device_device) (`gpsd.DEVICEReport`)
+* [`ERROR`](https://gpsd.gitlab.io/gpsd/gpsd_json.html#_error) (`gpsd.ERRORReport`)
 
 ## Documentation
 
-For complete library docs, visit [GoDoc.org](http://godoc.org/github.com/stratoberry/go-gpsd) or take a look at the `gpsd.go` file in this repository.
+For complete library documentation visit [Go Reference](https://pkg.go.dev/github.com/stratoberry/go-gpsd).
 
-GPSD's documentation on their JSON protocol can be found at [http://catb.org/gpsd/gpsd_json.html](http://catb.org/gpsd/gpsd_json.html)
+Documentation of GPSD's JSON protocol is available at [https://gpsd.gitlab.io/gpsd/gpsd_json.html](https://gpsd.gitlab.io/gpsd/gpsd_json.html).
 
 ## References
 
