@@ -7,6 +7,7 @@ import (
 	"io"
 	"net"
 	"time"
+	"errors"
 )
 
 // DefaultAddress of gpsd (localhost:2947)
@@ -251,6 +252,10 @@ func (s *Session) AddFilter(class string, f Filter) {
 	s.filters[class] = append(s.filters[class], f)
 }
 
+func (s *Session) Close() error {
+	return s.socket.Close()
+}
+
 func (s *Session) deliverReport(class string, report interface{}) {
 	for _, f := range s.filters[class] {
 		f(report)
@@ -288,8 +293,10 @@ func watch(done chan bool, s *Session) {
 				fmt.Println("JSON parsing error:", err)
 			}
 		} else {
-			fmt.Println("Stream reader error (is gpsd running?):", err)
-			if err == io.EOF {
+			if !errors.Is(err, net.ErrClosed) {
+				fmt.Println("Stream reader error (is gpsd running?):", err)
+			}
+			if errors.Is(err, io.EOF) || errors.Is(err, net.ErrClosed) {
 				break
 			}
 		}
