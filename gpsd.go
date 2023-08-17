@@ -260,6 +260,10 @@ func (s *Session) deliverReport(class string, report interface{}) {
 
 // Close closes the connection to GPSD
 func (s *Session) Close() error {
+	if s.socket == nil {
+		return errors.New("gpsd socket is alerady closed")
+	}
+
 	if err := s.socket.Close(); err != nil {
 		return err
 	}
