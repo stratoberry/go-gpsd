@@ -216,7 +216,7 @@ func dialCommon(c net.Conn, err error) (session *Session, e error) {
 
 // Watch starts watching GPSD reports in a new goroutine.
 //
-// Example
+// Example:
 //
 //	gps := gpsd.Dial(gpsd.DEFAULT_ADDRESS)
 //	done := gpsd.Watch()
@@ -258,11 +258,13 @@ func (s *Session) deliverReport(class string, report interface{}) {
 }
 
 // Close closes the connection to GPSD
-func (s *Session) Close() {
+func (s *Session) Close() error {
 	if err := s.socket.Close(); err != nil {
-		return
+		return err
 	}
+
 	s.socket = nil
+	return nil
 }
 
 func watch(done chan bool, s *Session) {
