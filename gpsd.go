@@ -165,6 +165,16 @@ type PPSReport struct {
 	ClockMusec float64 `json:"clock_musec"`
 }
 
+// TOFFReport is triggered on each PPS strobe from a device
+type TOFFReport struct {
+	Class     string  `json:"class"`
+	Device    string  `json:"device"`
+	RealSec   float64 `json:"real_sec"`
+	RealNSec  float64 `json:"real_nsec"`
+	ClockSec  float64 `json:"clock_sec"`
+	ClockNSec float64 `json:"clock_nsec"`
+}
+
 // ERRORReport is an error response
 type ERRORReport struct {
 	Class   string `json:"class"`
@@ -206,10 +216,11 @@ func dialCommon(c net.Conn, err error) (session *Session, e error) {
 
 // Watch starts watching GPSD reports in a new goroutine.
 //
-// Example
-//    gps := gpsd.Dial(gpsd.DEFAULT_ADDRESS)
-//    done := gpsd.Watch()
-//    <- done
+// Example:
+//
+//	gps := gpsd.Dial(gpsd.DEFAULT_ADDRESS)
+//	done := gpsd.Watch()
+//	<- done
 func (s *Session) Watch() (done chan bool) {
 	fmt.Fprintf(s.socket, "?WATCH={\"enable\":true,\"json\":true}")
 	done = make(chan bool)
@@ -228,13 +239,14 @@ func (s *Session) SendCommand(command string) {
 // GPSD reports with the given class. Callback functions have type Filter.
 //
 // Example:
-//    gps := gpsd.Init(gpsd.DEFAULT_ADDRESS)
-//    gps.AddFilter("TPV", func (r interface{}) {
-//      report := r.(*gpsd.TPVReport)
-//      fmt.Println(report.Time, report.Lat, report.Lon)
-//    })
-//    done := gps.Watch()
-//    <- done
+//
+//	gps := gpsd.Init(gpsd.DEFAULT_ADDRESS)
+//	gps.AddFilter("TPV", func (r interface{}) {
+//	  report := r.(*gpsd.TPVReport)
+//	  fmt.Println(report.Time, report.Lat, report.Lon)
+//	})
+//	done := gps.Watch()
+//	<- done
 func (s *Session) AddFilter(class string, f Filter) {
 	s.filters[class] = append(s.filters[class], f)
 }
@@ -243,6 +255,16 @@ func (s *Session) deliverReport(class string, report interface{}) {
 	for _, f := range s.filters[class] {
 		f(report)
 	}
+}
+
+// Close closes the connection to GPSD
+func (s *Session) Close() error {
+	if err := s.socket.Close(); err != nil {
+		return err
+	}
+
+	s.socket = nil
+	return nil
 }
 
 func watch(done chan bool, s *Session) {
@@ -305,6 +327,10 @@ func unmarshalReport(class string, bytes []byte) (interface{}, error) {
 		return r, err
 	case "PPS":
 		var r *PPSReport
+		err = json.Unmarshal(bytes, &r)
+		return r, err
+	case "TOFF":
+		var r *TOFFReport
 		err = json.Unmarshal(bytes, &r)
 		return r, err
 	case "ERROR":
