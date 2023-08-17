@@ -3,6 +3,7 @@ package gpsd
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -288,8 +289,10 @@ func watch(done chan bool, s *Session) {
 				fmt.Println("JSON parsing error:", err)
 			}
 		} else {
-			fmt.Println("Stream reader error (is gpsd running?):", err)
-			if err == io.EOF {
+			if !errors.Is(err, net.ErrClosed) {
+				fmt.Println("Stream reader error (is gpsd running?):", err)
+			}
+			if errors.Is(err, io.EOF) || errors.Is(err, net.ErrClosed) {
 				break
 			}
 		}
