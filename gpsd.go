@@ -3,11 +3,11 @@ package gpsd
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net"
 	"time"
-	"errors"
 )
 
 // DefaultAddress of gpsd (localhost:2947)
@@ -250,10 +250,6 @@ func (s *Session) SendCommand(command string) {
 //	<- done
 func (s *Session) AddFilter(class string, f Filter) {
 	s.filters[class] = append(s.filters[class], f)
-}
-
-func (s *Session) Close() error {
-	return s.socket.Close()
 }
 
 func (s *Session) deliverReport(class string, report interface{}) {
