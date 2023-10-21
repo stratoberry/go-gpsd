@@ -61,6 +61,7 @@ type TPVReport struct {
 	Epd    float64   `json:"epd"`
 	Eps    float64   `json:"eps"`
 	Epc    float64   `json:"epc"`
+	Eph    float64   `json:"eph"`
 }
 
 // SKYReport reports sky view of GPS satellites
