@@ -20,7 +20,8 @@ go-gpsd is a streaming client for GPSD's JSON service and as such can be used on
 import ("github.com/stratoberry/go-gpsd")
 
 func main() {
-	gps := gpsd.Dial("localhost:2947")
+	gps, err := gpsd.Dial("localhost:2947")
+	if err != nil { panic(err) }
 }
 ```
 
