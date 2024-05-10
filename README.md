@@ -6,6 +6,14 @@
 
 ## Installation
 
+### Packages
+
+#### Linux
+- Debian unstable: `apt install golang-github-stratoberry-go-gpsd-dev`
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/go:github-stratoberry-go-gpsd.svg)](https://repology.org/project/go:github-stratoberry-go-gpsd/versions)
+
+From source
 ```
 # go get github.com/stratoberry/go-gpsd
 ```
