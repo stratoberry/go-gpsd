@@ -205,17 +205,23 @@ func DialTimeout(address string, to time.Duration) (*Session, error) {
 	return dialCommon(net.DialTimeout("tcp4", address, to))
 }
 
+func NewSession(c net.Conn, reader *bufio.Reader) (session *Session, e error) {
+	return newSessionCommon(c, reader, nil)
+}
+
 func dialCommon(c net.Conn, err error) (session *Session, e error) {
+	return newSessionCommon(c, bufio.NewReader(c), err)
+}
+
+func newSessionCommon(c net.Conn, reader *bufio.Reader, err error) (session *Session, e error) {
 	session = new(Session)
 	session.socket = c
 	if err != nil {
 		return nil, err
 	}
 
-	session.reader = bufio.NewReader(session.socket)
-	session.reader.ReadString('\n')
+	session.reader = reader
 	session.filters = make(map[string][]Filter)
-
 	return
 }
 
