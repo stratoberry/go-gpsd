@@ -242,6 +242,7 @@ func (s *Session) SendCommand(command string) {
 
 // AddFilter attaches a function which will be called for all
 // GPSD reports with the given class. Callback functions have type Filter.
+// An error is returned if the given class is invalid.
 //
 // Example:
 //
@@ -252,8 +253,18 @@ func (s *Session) SendCommand(command string) {
 //	})
 //	done := gps.Watch()
 //	<- done
-func (s *Session) AddFilter(class string, f Filter) {
+func (s *Session) AddFilter(class string, f Filter) error {
+
+	// Check that class is a valid class string
+	switch class {
+	case "TPV", "SKY", "GST", "ATT", "VERSION", "DEVICES", "PPS", "TOFF", "ERROR":
+	default:
+		return errors.New("the provided class string is not a valid class")
+	}
+
 	s.filters[class] = append(s.filters[class], f)
+
+	return nil
 }
 
 func (s *Session) deliverReport(class string, report interface{}) {
@@ -265,7 +276,7 @@ func (s *Session) deliverReport(class string, report interface{}) {
 // Close closes the connection to GPSD
 func (s *Session) Close() error {
 	if s.socket == nil {
-		return errors.New("gpsd socket is alerady closed")
+		return errors.New("gpsd socket is already closed")
 	}
 
 	if err := s.socket.Close(); err != nil {
