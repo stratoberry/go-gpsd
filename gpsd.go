@@ -151,7 +151,7 @@ type DEVICEReport struct {
 	Subtype   string  `json:"subtype"`
 	Bps       int     `json:"bps"`
 	Parity    string  `json:"parity"`
-	Stopbits  string  `json:"stopbits"`
+	Stopbits  int     `json:"stopbits"`
 	Native    int     `json:"native"`
 	Cycle     float64 `json:"cycle"`
 	Mincycle  float64 `json:"mincycle"`
@@ -330,6 +330,10 @@ func unmarshalReport(class string, bytes []byte) (interface{}, error) {
 		return r, err
 	case "VERSION":
 		var r *VERSIONReport
+		err = json.Unmarshal(bytes, &r)
+		return r, err
+	case "DEVICE":
+		var r *DEVICEReport
 		err = json.Unmarshal(bytes, &r)
 		return r, err
 	case "DEVICES":
